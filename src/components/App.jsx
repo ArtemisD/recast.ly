@@ -6,10 +6,21 @@ class App extends React.Component {
       currentVideo: exampleVideoData[0],
       videoList: []
     };
+
+    this.debounceSearch = _.debounce(this.props.searchYouTube, 500);
   }
 
-  componentDidMount(userInput) {
-    this.props.searchYouTube({query: userInput, max: 5, key: YOUTUBE_API_KEY}, videos => {
+  componentDidMount() {
+    this.props.searchYouTube({query: 'react', max: 5, key: YOUTUBE_API_KEY}, videos => {
+      this.setState({
+        currentVideo: videos[0],
+        videoList: videos
+      });
+    });
+  }
+
+  onSearch(userInput) {
+    this.debounceSearch({query: userInput, max: 5, key: YOUTUBE_API_KEY}, videos => {
       this.setState({
         currentVideo: videos[0],
         videoList: videos
@@ -26,7 +37,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Nav userInput={this.componentDidMount.bind(this)}/>
+        <Nav userInput={this.onSearch.bind(this)}/>
         <div className="col-md-7">
           <VideoPlayer video={this.state.currentVideo}/>
         </div>
